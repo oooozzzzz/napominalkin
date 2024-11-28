@@ -28,7 +28,7 @@ export const getAnswer = async (input, thread_id) => {
 	try {
 		const agentFinalState = await agent.invoke(
 			{ messages: [new HumanMessage(input)] },
-			config
+			config,
 		);
 
 		// console.log((await agent.getState(config)).values.messages);
@@ -61,7 +61,7 @@ export const convertFileToCSV = async (inputFilename, outputFilename) => {
 	fs.writeFile(
 		"./menu.csv",
 		csv,
-		(err) => {}
+		(err) => {},
 		// { bookType: "csv",}
 	);
 	console.log("CSV file created successfully");
@@ -96,16 +96,18 @@ export const getTranscription = async (ctx) => {
 	await downloadRecord(url, path);
 
 	const data = fs.createReadStream(path);
-	const transcription = await yc.post("", data, {
-		params: {
-			folderId: "b1g418tami5o5juot9g6",
-			topic: "general",
-		},
-	});
-	console.log(transcription.data.result);
-	deleteFile(path);
-	// 	const response = transcription.text;
-		return transcription.data.result
+	try {
+		const transcription = await yc.post("", data, {
+			params: {
+				folderId: "b1g418tami5o5juot9g6",
+				topic: "general",
+			},
+		});
+		console.log(transcription.data.result);
+		deleteFile(path);
+		// 	const response = transcription.text;
+		return transcription.data.result;
+	} catch (error) {}
 };
 
 export const voiceToText = async (ctx) => {};
